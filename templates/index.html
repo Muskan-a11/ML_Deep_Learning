@@ -1,38 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brain Tumor Classifier</title>
 
 <style>
 body {
-  font-family: Arial, sans-serif;
-  background: #0a0a0f;
-  color: white;
-  text-align: center;
-  padding: 50px;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0a0a0f, #12121a);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 .container {
-  max-width: 600px;
-  margin: auto;
+  background: #12121a;
+  padding: 40px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
 }
 
-input, button {
-  padding: 10px;
-  margin-top: 10px;
+h1 {
+  margin-bottom: 20px;
+}
+
+.upload-box {
+  border: 2px dashed #333;
+  padding: 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.upload-box:hover {
+  border-color: cyan;
 }
 
 button {
-  background: cyan;
+  background: linear-gradient(90deg, cyan, #00bcd4);
   border: none;
+  padding: 12px;
+  width: 100%;
+  color: black;
+  font-weight: bold;
   cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  opacity: 0.9;
 }
 
 .result {
   margin-top: 20px;
-  font-size: 20px;
+  font-size: 18px;
+}
+
+.bar {
+  height: 10px;
+  background: #333;
+  margin-top: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: cyan;
 }
 </style>
 </head>
@@ -42,11 +81,14 @@ button {
 <div class="container">
   <h1>Brain Tumor Classifier</h1>
 
-  <input type="file" id="fileInput" accept="image/*">
-  <br>
+  <div class="upload-box">
+    <input type="file" id="fileInput" accept="image/*">
+  </div>
+
   <button onclick="predict()">Analyze MRI Scan</button>
 
   <div class="result" id="result"></div>
+  <div id="bars"></div>
 </div>
 
 <script>
@@ -54,7 +96,7 @@ async function predict() {
   const fileInput = document.getElementById("fileInput");
 
   if (!fileInput.files.length) {
-    alert("Please upload an image");
+    alert("Upload image first");
     return;
   }
 
@@ -62,20 +104,32 @@ async function predict() {
   formData.append("file", fileInput.files[0]);
 
   try {
-    const response = await fetch("/predict", {
+    const res = await fetch("/predict", {
       method: "POST",
       body: formData
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
     document.getElementById("result").innerHTML =
-      "Prediction: " + data.prediction + "<br>" +
-      "Confidence: " + data.confidence + "%";
+      `<b>${data.prediction}</b><br>Confidence: ${data.confidence}%`;
 
-  } catch (error) {
-    document.getElementById("result").innerText =
-      "Error connecting to server";
+    // Probability bars
+    let barsHTML = "";
+    for (let key in data.all_probabilities) {
+      let val = data.all_probabilities[key];
+      barsHTML += `
+        <div>${key} (${val}%)</div>
+        <div class="bar">
+          <div class="fill" style="width:${val}%"></div>
+        </div>
+      `;
+    }
+
+    document.getElementById("bars").innerHTML = barsHTML;
+
+  } catch {
+    document.getElementById("result").innerText = "Error connecting to server";
   }
 }
 </script>
