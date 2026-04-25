@@ -6,106 +6,72 @@
 <title>Brain Tumor Classifier</title>
 
 <style>
-:root {
-  --bg: #0a0a0f;
-  --card: #12121a;
-  --accent: #00e5ff;
-  --accent2: #ff3cac;
-  --text: #e8e8f0;
-  --muted: #666;
-}
-
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: linear-gradient(135deg, #0a0a0f, #12121a);
+  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-/* Neon background */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(rgba(0,229,255,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,229,255,0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
 .container {
-  background: var(--card);
+  background: #12121a;
   padding: 40px;
-  border-radius: 12px;
-  width: 420px;
+  border-radius: 10px;
+  width: 400px;
   text-align: center;
-  box-shadow: 0 0 40px rgba(0,229,255,0.15);
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
 }
 
 h1 {
-  font-size: 28px;
   margin-bottom: 20px;
 }
 
-h1 span {
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Upload box */
 .upload-box {
   border: 2px dashed #333;
-  padding: 30px;
+  padding: 20px;
+  margin-bottom: 20px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 .upload-box:hover {
-  border-color: var(--accent);
-  background: rgba(0,229,255,0.05);
+  border-color: cyan;
 }
 
-/* Button */
 button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 14px;
+  background: linear-gradient(90deg, cyan, #00bcd4);
   border: none;
-  font-weight: bold;
-  background: linear-gradient(90deg, var(--accent), #00bcd4);
+  padding: 12px;
+  width: 100%;
   color: black;
+  font-weight: bold;
   cursor: pointer;
   border-radius: 5px;
 }
 
 button:hover {
-  box-shadow: 0 0 15px rgba(0,229,255,0.5);
+  opacity: 0.9;
 }
 
-/* Results */
 .result {
   margin-top: 20px;
-  font-size: 20px;
+  font-size: 18px;
 }
 
-/* Bars */
 .bar {
+  height: 10px;
   background: #333;
-  height: 8px;
-  border-radius: 5px;
   margin-top: 5px;
+  border-radius: 5px;
   overflow: hidden;
 }
 
 .fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  transition: width 1s ease;
+  background: cyan;
 }
 </style>
 </head>
@@ -113,7 +79,7 @@ button:hover {
 <body>
 
 <div class="container">
-  <h1>Brain Tumor <span>Classifier</span></h1>
+  <h1>Brain Tumor Classifier</h1>
 
   <div class="upload-box">
     <input type="file" id="fileInput" accept="image/*">
@@ -148,6 +114,7 @@ async function predict() {
     document.getElementById("result").innerHTML =
       `<b>${data.prediction}</b><br>Confidence: ${data.confidence}%`;
 
+    // Probability bars
     let barsHTML = "";
     for (let key in data.all_probabilities) {
       let val = data.all_probabilities[key];
